@@ -1,0 +1,296 @@
+basePath: /
+definitions:
+  entity.BannerCreate:
+    properties:
+      date:
+        type: string
+      file_link:
+        type: string
+      href_name:
+        type: string
+      img_url:
+        type: string
+      label:
+        $ref: '#/definitions/entity.MultilingualField'
+      text:
+        $ref: '#/definitions/entity.MultilingualField'
+      title:
+        $ref: '#/definitions/entity.MultilingualField'
+      type:
+        type: string
+    type: object
+  entity.BannerGetAllRes:
+    properties:
+      banners:
+        items:
+          $ref: '#/definitions/entity.BannerRes'
+        type: array
+      count:
+        type: integer
+    type: object
+  entity.BannerRes:
+    properties:
+      created_at:
+        type: string
+      date:
+        type: string
+      file_link:
+        type: string
+      href_name:
+        type: string
+      id:
+        type: string
+      img_url:
+        type: string
+      label:
+        $ref: '#/definitions/entity.MultilingualField'
+      text:
+        $ref: '#/definitions/entity.MultilingualField'
+      title:
+        $ref: '#/definitions/entity.MultilingualField'
+      type:
+        type: string
+    type: object
+  entity.MultilingualField:
+    properties:
+      en:
+        example: English
+        type: string
+      ru:
+        example: Русский
+        type: string
+      uz:
+        example: Uzbek
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is a sample server Ccenter News server.
+  title: Ccenter News API
+  version: "1.0"
+paths:
+  /img-upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: File upload
+      parameters:
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: File upload
+      tags:
+      - file-upload
+  /news/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new News with the provided details
+      parameters:
+      - description: News Details
+        in: body
+        name: Banner
+        required: true
+        schema:
+          $ref: '#/definitions/entity.BannerCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.BannerCreate'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new News
+      tags:
+      - News
+  /news/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an New by ID
+      parameters:
+      - description: New ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: New deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete an New
+      tags:
+      - News
+  /news/get:
+    get:
+      consumes:
+      - application/json
+      description: Get an News by their ID
+      parameters:
+      - description: News ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.BannerRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get News by ID
+      tags:
+      - News
+  /news/image/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Image
+      parameters:
+      - description: Image url
+        in: query
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Image deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a Image
+      tags:
+      - News
+  /news/list:
+    get:
+      consumes:
+      - application/json
+      description: Get all News with optional filtering
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.BannerGetAllRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all News
+      tags:
+      - News
+  /news/update:
+    put:
+      consumes:
+      - application/json
+      description: Update an New's details
+      parameters:
+      - description: New ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: News Update Details
+        in: body
+        name: Banner
+        required: true
+        schema:
+          $ref: '#/definitions/entity.BannerCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update an New
+      tags:
+      - News
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
