@@ -20,9 +20,9 @@ type MinIO struct {
 var bucketName = "ccenter-news"
 
 func MinIOConnect(cnf *config.Config) (*MinIO, error) {
-	endpoint := "minio:9000"
-	accessKeyID := "minioadmin"
-	secretAccessKey := "minioadmin123"
+	endpoint := cnf.MINIO_ENDPOINT
+	accessKeyID := cnf.MINIO_ACCESS_KEY
+	secretAccessKey := cnf.MINIO_SECRET_KEY
 
 	minioClient, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
