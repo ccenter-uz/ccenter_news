@@ -31,42 +31,65 @@ func NewBannerRepo(pg *postgres.Postgres, config *config.Config, logger *logger.
 }
 
 func (r *BannerRepo) Create(ctx context.Context, req *entity.BannerCreate) error {
-	query := `
-	INSERT INTO banner (
-		text_uz,
-		text_ru,
-		text_en,
-		title_uz,
-		title_ru,
-		title_en,
-		date,
-		label_uz,
-		label_ru,
-		label_en,
-		img_url,
-		file_link,
-		href_name,
-		type,
-		"order"
-	) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
-
+	tx, err := r.pg.Pool.BeginTx(ctx, pgx.TxOptions{
+		IsoLevel:   pgx.ReadCommitted,
+		AccessMode: pgx.ReadWrite,
+	})
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
 
 	if req.Order == 0 {
 		var maxOrder int
-		query := ` SELECT MAX("order") FROM banner`
-		err := r.pg.Pool.QueryRow(ctx, query).Scan(&maxOrder)
+		err := tx.QueryRow(ctx, `SELECT COALESCE(MAX("order"), 0) FROM banner`).Scan(&maxOrder)
 		if err != nil {
 			return err
 		}
 		req.Order = maxOrder + 1
+	} else {
+		_, err := tx.Exec(ctx, `
+			UPDATE banner
+			SET "order" = "order" + 1
+			WHERE "order" >= $1
+		`, req.Order)
+		if err != nil {
+			return err
+		}
 	}
-	_, err := r.pg.Pool.Exec(ctx, query, req.Text.Uz, req.Text.Ru, req.Text.En, req.Title.Uz,
-		req.Title.Ru, req.Title.En, req.Date, req.Label.Uz, req.Label.Ru, req.Label.En, req.ImgUrl, req.FileLink, req.HrefName, req.Type, req.Order)
+
+	query := `
+		INSERT INTO banner (
+			text_uz,
+			text_ru,
+			text_en,
+			title_uz,
+			title_ru,
+			title_en,
+			date,
+			label_uz,
+			label_ru,
+			label_en,
+			img_url,
+			file_link,
+			href_name,
+			type,
+			"order"
+		) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
+
+	_, err = tx.Exec(ctx, query,
+		req.Text.Uz, req.Text.Ru, req.Text.En,
+		req.Title.Uz, req.Title.Ru, req.Title.En,
+		req.Date,
+		req.Label.Uz, req.Label.Ru, req.Label.En,
+		req.ImgUrl, req.FileLink, req.HrefName,
+		req.Type, req.Order,
+	)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return tx.Commit(ctx)
 }
 
 func (r *BannerRepo) GetById(ctx context.Context, req *entity.ById) (*entity.BannerRes, error) {
