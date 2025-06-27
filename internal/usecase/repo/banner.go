@@ -50,6 +50,16 @@ func (r *BannerRepo) Create(ctx context.Context, req *entity.BannerCreate) error
 		"order"
 	) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
 
+
+	if req.Order == 0 {
+		var maxOrder int
+		query := ` SELECT MAX("order") FROM banner`
+		err := r.pg.Pool.QueryRow(ctx, query).Scan(&maxOrder)
+		if err != nil {
+			return err
+		}
+		req.Order = maxOrder
+	}
 	_, err := r.pg.Pool.Exec(ctx, query, req.Text.Uz, req.Text.Ru, req.Text.En, req.Title.Uz,
 		req.Title.Ru, req.Title.En, req.Date, req.Label.Uz, req.Label.Ru, req.Label.En, req.ImgUrl, req.FileLink, req.HrefName, req.Type, req.Order)
 	if err != nil {
