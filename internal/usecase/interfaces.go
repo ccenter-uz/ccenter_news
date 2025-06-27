@@ -23,5 +23,6 @@ type (
 		Update(ctx context.Context, req *entity.BannerUpdate) error
 		Delete(ctx context.Context, req *entity.ById) error
 		DeleteImage(ctx context.Context, req *entity.DeleteImage) error
+		GetImages(ctx context.Context) (*entity.ListImages, error)
 	}
 )

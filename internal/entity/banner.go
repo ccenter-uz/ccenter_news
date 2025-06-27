@@ -9,6 +9,7 @@ type BannerCreate struct {
 	FileLink string            `json:"file_link"`
 	HrefName string            `json:"href_name"`
 	Type     string            `json:"type"`
+	Order    int               `json:"order"`
 }
 
 type BannerUpdate struct {
@@ -21,6 +22,7 @@ type BannerUpdate struct {
 	FileLink string            `json:"file_link"`
 	HrefName string            `json:"href_name"`
 	Type     string            `json:"type"`
+	Order    int               `json:"order"`
 }
 
 type BannerRes struct {
@@ -33,6 +35,7 @@ type BannerRes struct {
 	FileLink  *string           `json:"file_link"`
 	HrefName  *string           `json:"href_name"`
 	Type      string            `json:"type"`
+	Order     int               `json:"order"`
 	CreatedAt string            `json:"created_at"`
 }
 
@@ -43,4 +46,12 @@ type BannerGetAllRes struct {
 
 type DeleteImage struct {
 	ImgUrl string `json:"img_url"`
+}
+
+type Image struct {
+	ImgUrl string `json:"img_url"`
+}
+type ListImages struct {
+	Images []Image `json:"images"`
+	Count  int     `json:"count"`
 }

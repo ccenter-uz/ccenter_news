@@ -29,7 +29,7 @@ func NewAuthRepo(pg *postgres.Postgres, config *config.Config, logger *logger.Lo
 
 func (r *AuthRepo) Login(ctx context.Context, req *entity.LoginReq) (*entity.UserInfo, error) {
 	res := &entity.UserInfo{}
-
+	
 	var password string
 	var createdAt time.Time
 	query := `SELECT id, login, role, password_hash, service_name, username, first_number, image_url, created_at FROM users WHERE login = $1 AND password_hash = $2 AND deleted_at = 0`

@@ -115,6 +115,9 @@ func (h *Handler) UpdateBanner(c *gin.Context) {
 		Date:     reqBody.Date,
 		ImgUrl:   reqBody.ImgUrl,
 		FileLink: reqBody.FileLink,
+		HrefName: reqBody.HrefName,
+		Type:     reqBody.Type,
+		Order:    reqBody.Order,
 	})
 	if err != nil {
 		c.JSON(500, gin.H{"Error updating New:": err})
@@ -216,6 +219,30 @@ func (h *Handler) DeleteImage(c *gin.Context) {
 
 	slog.Info("Image deleted successfully")
 	c.JSON(200, "Image deleted successfully")
+}
+
+// ListImages godoc
+// @Summary Get all Images
+// @Description Get all Images
+// @Tags News
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} entity.ListImages
+// @Failure 400 {object} string
+// @Failure 500 {object} string
+// @Security BearerAuth
+// @Router /news/images/list [get]
+func (h *Handler) ListImages(c *gin.Context) {
+
+	res, err := h.UseCase.BannerRepo.GetImages(context.Background())
+	if err != nil {
+		c.JSON(500, gin.H{"Error getting images:": err})
+		slog.Error("Error getting images: ", "err", err)
+		return
+	}
+
+	slog.Info("Images retrieved successfully")
+	c.JSON(200, res)
 }
 
 func parsePaginationParams(c *gin.Context, limit, offset string) (int, int, error) {

@@ -250,6 +250,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/news/images/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all Images",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "News"
+                ],
+                "summary": "Get all Images",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.ListImages"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/news/list": {
             "get": {
                 "security": [
@@ -382,6 +422,9 @@ const docTemplate = `{
                 "label": {
                     "$ref": "#/definitions/entity.MultilingualField"
                 },
+                "order": {
+                    "type": "integer"
+                },
                 "text": {
                     "$ref": "#/definitions/entity.MultilingualField"
                 },
@@ -431,6 +474,9 @@ const docTemplate = `{
                 "label": {
                     "$ref": "#/definitions/entity.MultilingualField"
                 },
+                "order": {
+                    "type": "integer"
+                },
                 "text": {
                     "$ref": "#/definitions/entity.MultilingualField"
                 },
@@ -439,6 +485,28 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "entity.Image": {
+            "type": "object",
+            "properties": {
+                "img_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.ListImages": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.Image"
+                    }
                 }
             }
         },

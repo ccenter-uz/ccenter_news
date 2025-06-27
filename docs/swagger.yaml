@@ -12,6 +12,8 @@ definitions:
         type: string
       label:
         $ref: '#/definitions/entity.MultilingualField'
+      order:
+        type: integer
       text:
         $ref: '#/definitions/entity.MultilingualField'
       title:
@@ -44,12 +46,28 @@ definitions:
         type: string
       label:
         $ref: '#/definitions/entity.MultilingualField'
+      order:
+        type: integer
       text:
         $ref: '#/definitions/entity.MultilingualField'
       title:
         $ref: '#/definitions/entity.MultilingualField'
       type:
         type: string
+    type: object
+  entity.Image:
+    properties:
+      img_url:
+        type: string
+    type: object
+  entity.ListImages:
+    properties:
+      count:
+        type: integer
+      images:
+        items:
+          $ref: '#/definitions/entity.Image'
+        type: array
     type: object
   entity.MultilingualField:
     properties:
@@ -215,6 +233,31 @@ paths:
       security:
       - BearerAuth: []
       summary: Delete a Image
+      tags:
+      - News
+  /news/images/list:
+    get:
+      consumes:
+      - application/json
+      description: Get all Images
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.ListImages'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all Images
       tags:
       - News
   /news/list:

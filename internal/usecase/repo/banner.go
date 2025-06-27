@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/mirjalilova/ccenter_news.git/config"
 	"github.com/mirjalilova/ccenter_news.git/internal/entity"
 	"github.com/mirjalilova/ccenter_news.git/pkg/logger"
@@ -45,11 +46,12 @@ func (r *BannerRepo) Create(ctx context.Context, req *entity.BannerCreate) error
 		img_url,
 		file_link,
 		href_name,
-		type
-	) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`
+		type,
+		"order"
+	) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
 
 	_, err := r.pg.Pool.Exec(ctx, query, req.Text.Uz, req.Text.Ru, req.Text.En, req.Title.Uz,
-		req.Title.Ru, req.Title.En, req.Date, req.Label.Uz, req.Label.Ru, req.Label.En, req.ImgUrl, req.FileLink, req.HrefName, req.Type)
+		req.Title.Ru, req.Title.En, req.Date, req.Label.Uz, req.Label.Ru, req.Label.En, req.ImgUrl, req.FileLink, req.HrefName, req.Type, req.Order)
 	if err != nil {
 		return err
 	}
@@ -79,6 +81,7 @@ func (r *BannerRepo) GetById(ctx context.Context, req *entity.ById) (*entity.Ban
 		date,
 		href_name,
   		type,
+		"order",
 		created_at
 	FROM 
 		banner
@@ -105,6 +108,7 @@ func (r *BannerRepo) GetById(ctx context.Context, req *entity.ById) (*entity.Ban
 		&res.Date,
 		&res.HrefName,
 		&res.Type,
+		&res.Order,
 		&createdAt,
 	)
 	if err != nil {
@@ -137,11 +141,12 @@ func (r *BannerRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.Ba
 		date,
 		href_name,
 		type,
+		"order",
 		created_at
 	FROM
 		banner
 	WHERE 
-		deleted_at = 0
+		deleted_at = 0 ORDER BY "order"
 	`
 
 	var args []interface{}
@@ -185,6 +190,7 @@ func (r *BannerRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.Ba
 			&res.Date,
 			&res.HrefName,
 			&res.Type,
+			&res.Order,
 			&createdAt,
 		)
 		if err != nil {
@@ -264,6 +270,12 @@ func (r *BannerRepo) Update(ctx context.Context, req *entity.BannerUpdate) error
 		conditions = append(conditions, " type = $"+strconv.Itoa(len(args)+1))
 		args = append(args, req.Type)
 	}
+	if req.Order != 0 {
+		err := UpdateBannerOrder(ctx, r.pg, req.Id, req.Order)
+		if err != nil {
+			return err
+		}
+	}
 
 	if len(conditions) == 0 {
 		return errors.New("nothing to update")
@@ -325,4 +337,89 @@ func (r *BannerRepo) DeleteImage(ctx context.Context, req *entity.DeleteImage) e
 	}
 
 	return nil
+}
+
+func (r *BannerRepo) GetImages(ctx context.Context) (*entity.ListImages, error) {
+
+	resp := &entity.ListImages{}
+
+	query := `
+	SELECT
+		COUNT(id) OVER () AS total_count,
+		img_url
+	FROM
+		banner
+	WHERE 
+		deleted_at = 0
+	`
+
+	rows, err := r.pg.Pool.Query(ctx, query)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("imgage not found")
+		}
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		res := entity.Image{}
+		var count int
+
+		err := rows.Scan(
+			&count,
+			&res.ImgUrl,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		resp.Images = append(resp.Images, res)
+		resp.Count = count
+	}
+
+	return resp, nil
+}
+
+func UpdateBannerOrder(ctx context.Context, db *postgres.Postgres, id string, newOrder int) error {
+	var oldOrder int
+
+	err := db.Pool.QueryRow(ctx, `SELECT "order" FROM banner WHERE id = $1`, id).Scan(&oldOrder)
+	if err != nil {
+		return err
+	}
+
+	tx, err := db.Pool.BeginTx(ctx, pgx.TxOptions{
+		IsoLevel:   pgx.ReadCommitted,
+		AccessMode: pgx.ReadWrite,
+	})
+	defer tx.Rollback(ctx)
+
+	if newOrder < oldOrder {
+		_, err = tx.Exec(ctx, `
+			UPDATE banner
+			SET "order" = "order" + 1
+			WHERE "order" >= $1 AND "order" < $2
+		`, newOrder, oldOrder)
+	} else if newOrder > oldOrder {
+		_, err = tx.Exec(ctx, `
+			UPDATE banner
+			SET "order" = "order" - 1
+			WHERE "order" <= $1 AND "order" > $2
+		`, newOrder, oldOrder)
+	}
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx, `
+		UPDATE banner
+		SET "order" = $1
+		WHERE id = $2
+	`, newOrder, id)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
