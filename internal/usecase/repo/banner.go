@@ -58,7 +58,7 @@ func (r *BannerRepo) Create(ctx context.Context, req *entity.BannerCreate) error
 		if err != nil {
 			return err
 		}
-		req.Order = maxOrder
+		req.Order = maxOrder + 1
 	}
 	_, err := r.pg.Pool.Exec(ctx, query, req.Text.Uz, req.Text.Ru, req.Text.En, req.Title.Uz,
 		req.Title.Ru, req.Title.En, req.Date, req.Label.Uz, req.Label.Ru, req.Label.En, req.ImgUrl, req.FileLink, req.HrefName, req.Type, req.Order)
