@@ -310,10 +310,6 @@ func (r *BannerRepo) Update(ctx context.Context, req *entity.BannerUpdate) error
 		}
 	}
 
-	if len(conditions) == 0 {
-		return errors.New("nothing to update")
-	}
-
 	conditions = append(conditions, " updated_at = now()")
 	query += strings.Join(conditions, ", ")
 	query += " WHERE id = $" + strconv.Itoa(len(args)+1) + " AND deleted_at = 0"
