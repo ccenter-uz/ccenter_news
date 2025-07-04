@@ -329,26 +329,48 @@ func (r *BannerRepo) Update(ctx context.Context, req *entity.BannerUpdate) error
 }
 
 func (r *BannerRepo) Delete(ctx context.Context, req *entity.ById) error {
+	tx, err := r.pg.Pool.BeginTx(ctx, pgx.TxOptions{
+		IsoLevel:   pgx.ReadCommitted,
+		AccessMode: pgx.ReadWrite,
+	})
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
 
-	query := `
-	UPDATE 
-		banner
-	SET 
-		deleted_at = EXTRACT(EPOCH FROM NOW())
-	WHERE 
-		id = $1
-	AND 
-		deleted_at = 0
-	`
-
-	_, err := r.pg.Pool.Exec(ctx, query, req.Id)
-
+	var order int
+	err = tx.QueryRow(ctx, `SELECT "order" FROM banner WHERE id = $1 AND deleted_at = 0`, req.Id).Scan(&order)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	_, err = tx.Exec(ctx, `UPDATE banner SET "order" = -(EXTRACT(EPOCH FROM NOW())) WHERE id = $1`, req.Id)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx, `
+		UPDATE banner
+		SET "order" = "order" - 1
+		WHERE "order" > $1
+	`, order)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx, `
+		UPDATE banner
+		SET deleted_at = EXTRACT(EPOCH FROM NOW())
+		WHERE id = $1
+	`, req.Id)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
+
+
 
 func (r *BannerRepo) DeleteImage(ctx context.Context, req *entity.DeleteImage) error {
 
@@ -379,7 +401,8 @@ func (r *BannerRepo) GetImages(ctx context.Context) (*entity.ListImages, error) 
 	query := `
 	SELECT
 		COUNT(id) OVER () AS total_count,
-		img_url
+		img_url,
+		file_link
 	FROM
 		banner
 	WHERE 
@@ -402,6 +425,7 @@ func (r *BannerRepo) GetImages(ctx context.Context) (*entity.ListImages, error) 
 		err := rows.Scan(
 			&count,
 			&res.ImgUrl,
+			&res.FileLink,
 		)
 		if err != nil {
 			return nil, err
@@ -426,9 +450,6 @@ func UpdateBannerOrder(ctx context.Context, db *postgres.Postgres, id string, ne
 		IsoLevel:   pgx.ReadCommitted,
 		AccessMode: pgx.ReadWrite,
 	})
-	if err != nil {
-		return err
-	}
 	defer tx.Rollback(ctx)
 
 	if newOrder < oldOrder {
@@ -436,14 +457,12 @@ func UpdateBannerOrder(ctx context.Context, db *postgres.Postgres, id string, ne
 			UPDATE banner
 			SET "order" = "order" + 1
 			WHERE "order" >= $1 AND "order" < $2
-			ORDER BY "order" DESC
 		`, newOrder, oldOrder)
 	} else if newOrder > oldOrder {
 		_, err = tx.Exec(ctx, `
 			UPDATE banner
 			SET "order" = "order" - 1
 			WHERE "order" <= $1 AND "order" > $2
-			ORDER BY "order" ASC
 		`, newOrder, oldOrder)
 	}
 	if err != nil {

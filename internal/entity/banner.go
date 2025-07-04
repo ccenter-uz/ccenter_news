@@ -49,7 +49,8 @@ type DeleteImage struct {
 }
 
 type Image struct {
-	ImgUrl string `json:"img_url"`
+	ImgUrl   string `json:"img_url"`
+	FileLink string `json:"file_link"`
 }
 type ListImages struct {
 	Images []Image `json:"images"`

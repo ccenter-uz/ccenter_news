@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/exp/slog"
 	"github.com/google/uuid"
+	"golang.org/x/exp/slog"
 )
 
 type File struct {
@@ -54,18 +54,18 @@ func (h *Handler) UploadFile(c *gin.Context) {
 		return
 	}
 
-	minioURL, err := h.MinIO.Upload(fileName, tempFilePath)
-	if err != nil {
-		slog.Error("Error uploading to MinIO", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload to MinIO"})
-		return
-	}
+	// minioURL, err := h.MinIO.Upload(fileName, tempFilePath)
+	// if err != nil {
+	// 	slog.Error("Error uploading to MinIO", err)
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload to MinIO"})
+	// 	return
+	// }
 
 	os.Remove(tempFilePath)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Message": "Successfully upload",
-		"Url":     minioURL,
+		// "Url":     minioURL,
 	})
 
 }

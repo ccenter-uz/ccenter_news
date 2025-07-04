@@ -16,7 +16,6 @@ import (
 
 	"github.com/mirjalilova/ccenter_news.git/pkg/httpserver"
 	"github.com/mirjalilova/ccenter_news.git/pkg/logger"
-	"github.com/mirjalilova/ccenter_news.git/pkg/minio"
 	"github.com/mirjalilova/ccenter_news.git/pkg/postgres"
 )
 
@@ -56,15 +55,15 @@ func Run(cfg *config.Config) {
 	useCase := usecase.New(pg, cfg, l)
 
 	//MinIO
-	minioClient, err := minio.MinIOConnect(cfg)
-	if err != nil {
-		slog.Error("Failed to connect to MinIO", "err", err)
-		return
-	}
+	// minioClient, err := minio.MinIOConnect(cfg)
+	// if err != nil {
+	// 	slog.Error("Failed to connect to MinIO", "err", err)
+	// 	return
+	// }
 
 	// HTTP Server
 	handler := gin.New()
-	v1.NewRouter(handler, l, cfg, useCase, minioClient)
+	v1.NewRouter(handler, l, cfg, useCase)
 
 	httpServer := httpserver.New(handler, httpserver.Port(cfg.HTTP.Port))
 

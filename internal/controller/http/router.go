@@ -17,7 +17,6 @@ import (
 	"github.com/mirjalilova/ccenter_news.git/internal/controller/http/handler"
 	"github.com/mirjalilova/ccenter_news.git/internal/usecase"
 	"github.com/mirjalilova/ccenter_news.git/pkg/logger"
-	"github.com/mirjalilova/ccenter_news.git/pkg/minio"
 )
 
 func TimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
@@ -39,12 +38,12 @@ func TimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-func NewRouter(engine *gin.Engine, l *logger.Logger, config *config.Config, useCase *usecase.UseCase, minioClient *minio.MinIO) {
+func NewRouter(engine *gin.Engine, l *logger.Logger, config *config.Config, useCase *usecase.UseCase) {
 	// Options
 	engine.Use(gin.Logger())
 	//engine.Use(gin.Recovery())
 
-	handlerV1 := handler.NewHandler(l, config, useCase, *minioClient)
+	handlerV1 := handler.NewHandler(l, config, useCase)
 
 	// Initialize Casbin enforcer
 
