@@ -272,7 +272,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.ListImages"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Url"
+                            }
                         }
                     },
                     "400": {
@@ -488,28 +491,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entity.Image": {
-            "type": "object",
-            "properties": {
-                "img_url": {
-                    "type": "string"
-                }
-            }
-        },
-        "entity.ListImages": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "type": "integer"
-                },
-                "images": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entity.Image"
-                    }
-                }
-            }
-        },
         "entity.MultilingualField": {
             "type": "object",
             "properties": {
@@ -524,6 +505,14 @@ const docTemplate = `{
                 "uz": {
                     "type": "string",
                     "example": "Uzbek"
+                }
+            }
+        },
+        "entity.Url": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
                 }
             }
         }

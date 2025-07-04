@@ -56,3 +56,7 @@ type ListImages struct {
 	Images []Image `json:"images"`
 	Count  int     `json:"count"`
 }
+
+type Url struct {
+	Url string `json:"url"`
+}

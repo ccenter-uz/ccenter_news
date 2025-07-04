@@ -227,7 +227,7 @@ func (h *Handler) DeleteImage(c *gin.Context) {
 // @Tags News
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} entity.ListImages
+// @Success 200 {object} []entity.Url
 // @Failure 400 {object} string
 // @Failure 500 {object} string
 // @Security BearerAuth
@@ -241,8 +241,18 @@ func (h *Handler) ListImages(c *gin.Context) {
 		return
 	}
 
+	urls := []entity.Url{}
+	for _, url := range res.Images {
+		if url.ImgUrl != "" {
+			urls = append(urls, entity.Url{Url: url.ImgUrl})
+		}
+		if url.FileLink != "" {
+			urls = append(urls, entity.Url{Url: url.FileLink})
+		}
+	}
+
 	slog.Info("Images retrieved successfully")
-	c.JSON(200, res)
+	c.JSON(200, urls)
 }
 
 func parsePaginationParams(c *gin.Context, limit, offset string) (int, int, error) {

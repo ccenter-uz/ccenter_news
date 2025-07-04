@@ -55,20 +55,6 @@ definitions:
       type:
         type: string
     type: object
-  entity.Image:
-    properties:
-      img_url:
-        type: string
-    type: object
-  entity.ListImages:
-    properties:
-      count:
-        type: integer
-      images:
-        items:
-          $ref: '#/definitions/entity.Image'
-        type: array
-    type: object
   entity.MultilingualField:
     properties:
       en:
@@ -79,6 +65,11 @@ definitions:
         type: string
       uz:
         example: Uzbek
+        type: string
+    type: object
+  entity.Url:
+    properties:
+      url:
         type: string
     type: object
 info:
@@ -246,7 +237,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.ListImages'
+            items:
+              $ref: '#/definitions/entity.Url'
+            type: array
         "400":
           description: Bad Request
           schema:
