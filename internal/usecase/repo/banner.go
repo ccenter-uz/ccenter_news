@@ -387,6 +387,24 @@ func (r *BannerRepo) DeleteImage(ctx context.Context, req *entity.DeleteImage) e
 		return err
 	}
 
+		query = `
+	UPDATE 
+		banner
+	SET 
+		file_link = ''
+	WHERE 
+		file_link = $1
+	AND 
+		deleted_at = 0
+	`
+
+	_, err = r.pg.Pool.Exec(ctx, query, req.ImgUrl)
+
+	if err != nil {
+		return err
+	}
+
+
 	return nil
 }
 
