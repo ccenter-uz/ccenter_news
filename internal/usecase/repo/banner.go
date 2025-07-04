@@ -402,7 +402,8 @@ func (r *BannerRepo) GetImages(ctx context.Context) (*entity.ListImages, error) 
 	FROM
 		banner
 	WHERE 
-		deleted_at = 0 AND img_url <> '' AND file_link <> ''
+		deleted_at = 0 
+		AND (img_url <> '' OR file_link <> '')
 	`
 
 	rows, err := r.pg.Pool.Query(ctx, query)
