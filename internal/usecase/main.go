@@ -8,13 +8,11 @@ import (
 )
 
 type UseCase struct {
-	AuthRepo   AuthRepoI
 	BannerRepo BannerRepoI
 }
 
 func New(pg *postgres.Postgres, config *config.Config, logger *logger.Logger) *UseCase {
 	return &UseCase{
-		AuthRepo:   repo.NewAuthRepo(pg, config, logger),
 		BannerRepo: repo.NewBannerRepo(pg, config, logger),
 	}
 }

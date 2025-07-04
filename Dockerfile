@@ -19,8 +19,6 @@ COPY --from=builder /app/ccenter_news /app/ccenter_news
 COPY --from=builder /app/config /app/config
 COPY --from=builder /app/migrations /app/migrations
 COPY --from=builder /app/migrations /app/internal/media
-COPY --from=builder /app/internal/controller/http/casbin/model.conf .internal/controller/http/casbin/
-COPY --from=builder /app/internal/controller/http/casbin/policy.csv .internal/controller/http/casbin/
 
 ENV TZ=Asia/Tashkent
 RUN ln -snf /usr/share/zoneinfo/Asia/Tashkent /etc/localtime && echo "Asia/Tashkent" > /etc/timezone

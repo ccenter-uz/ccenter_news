@@ -10,10 +10,6 @@ import (
 //go:generate mockgen -source=interfaces.go -destination=./mocks_test.go -package=usecase_test
 
 type (
-	// AuthRepo -.
-	AuthRepoI interface {
-		Login(ctx context.Context, req *entity.LoginReq) (*entity.UserInfo, error)
-	}
 
 	// BannerRepo -.
 	BannerRepoI interface {

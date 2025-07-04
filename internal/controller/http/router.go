@@ -2,11 +2,9 @@ package http
 
 import (
 	"context"
-	"log/slog"
 	"net/http"
 	"time"
 
-	"github.com/casbin/casbin/v2"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -66,17 +64,6 @@ func NewRouter(engine *gin.Engine, l *logger.Logger, config *config.Config, useC
 	engine.Use(cors.Default())
 	// Prometheus metrics
 	engine.GET("/metrics", gin.WrapH(promhttp.Handler()))
-
-	enforcer, err := casbin.NewEnforcer("./internal/controller/http/casbin/model.conf", "./internal/controller/http/casbin/policy.csv")
-	if err != nil {
-		slog.Error("Error while creating enforcer: ", "err", err)
-	}
-
-	if enforcer == nil {
-		slog.Error("Enforcer is nil after initialization!")
-	} else {
-		slog.Info("Enforcer initialized successfully.")
-	}
 
 	// Routes
 

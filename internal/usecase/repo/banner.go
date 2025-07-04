@@ -383,7 +383,7 @@ func (r *BannerRepo) GetImages(ctx context.Context) (*entity.ListImages, error) 
 	FROM
 		banner
 	WHERE 
-		deleted_at = 0
+		deleted_at = 0 AND img_url <> ''
 	`
 
 	rows, err := r.pg.Pool.Query(ctx, query)
@@ -426,6 +426,9 @@ func UpdateBannerOrder(ctx context.Context, db *postgres.Postgres, id string, ne
 		IsoLevel:   pgx.ReadCommitted,
 		AccessMode: pgx.ReadWrite,
 	})
+	if err != nil {
+		return err
+	}
 	defer tx.Rollback(ctx)
 
 	if newOrder < oldOrder {
@@ -433,12 +436,14 @@ func UpdateBannerOrder(ctx context.Context, db *postgres.Postgres, id string, ne
 			UPDATE banner
 			SET "order" = "order" + 1
 			WHERE "order" >= $1 AND "order" < $2
+			ORDER BY "order" DESC
 		`, newOrder, oldOrder)
 	} else if newOrder > oldOrder {
 		_, err = tx.Exec(ctx, `
 			UPDATE banner
 			SET "order" = "order" - 1
 			WHERE "order" <= $1 AND "order" > $2
+			ORDER BY "order" ASC
 		`, newOrder, oldOrder)
 	}
 	if err != nil {
