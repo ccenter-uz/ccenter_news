@@ -366,9 +366,7 @@ func (r *BannerRepo) Delete(ctx context.Context, req *entity.ById) error {
 	return tx.Commit(ctx)
 }
 
-
-
-func (r *BannerRepo) DeleteImage(ctx context.Context, req *entity.DeleteImage) error {
+func (r *BannerRepo) DeleteImage(ctx context.Context, req *entity.DeleteFile) error {
 
 	query := `
 	UPDATE 
@@ -381,13 +379,13 @@ func (r *BannerRepo) DeleteImage(ctx context.Context, req *entity.DeleteImage) e
 		deleted_at = 0
 	`
 
-	_, err := r.pg.Pool.Exec(ctx, query, req.ImgUrl)
+	_, err := r.pg.Pool.Exec(ctx, query, req.Url)
 
 	if err != nil {
 		return err
 	}
 
-		query = `
+	query = `
 	UPDATE 
 		banner
 	SET 
@@ -398,56 +396,65 @@ func (r *BannerRepo) DeleteImage(ctx context.Context, req *entity.DeleteImage) e
 		deleted_at = 0
 	`
 
-	_, err = r.pg.Pool.Exec(ctx, query, req.ImgUrl)
+	_, err = r.pg.Pool.Exec(ctx, query, req.Url)
 
 	if err != nil {
 		return err
 	}
 
+	query = `
+	UPDATE 
+		files
+	SET 
+		deleted_at = EXTRACT(EPOCH FROM NOW())
+	WHERE 
+		url = $1
+	AND 
+		deleted_at = 0
+	`
+
+	_, err = r.pg.Pool.Exec(ctx, query, req.Url)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func (r *BannerRepo) GetImages(ctx context.Context) (*entity.ListImages, error) {
+func (r *BannerRepo) GetFiles(ctx context.Context) (*[]entity.Url, error) {
 
-	resp := &entity.ListImages{}
+	resp := &[]entity.Url{}
 
 	query := `
 	SELECT
-		COUNT(id) OVER () AS total_count,
-		img_url,
-		file_link
+		url
 	FROM
-		banner
+		files
 	WHERE 
 		deleted_at = 0 
-		AND (img_url <> '' OR file_link <> '')
 	`
 
 	rows, err := r.pg.Pool.Query(ctx, query)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, errors.New("imgage not found")
+			return nil, errors.New("files not found")
 		}
 		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		res := entity.Image{}
-		var count int
+		res := entity.Url{}
 
 		err := rows.Scan(
-			&count,
-			&res.ImgUrl,
-			&res.FileLink,
+			&res.Url,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		resp.Images = append(resp.Images, res)
-		resp.Count = count
+		*resp = append(*resp, res)
 	}
 
 	return resp, nil
@@ -494,4 +501,16 @@ func UpdateBannerOrder(ctx context.Context, db *postgres.Postgres, id string, ne
 	}
 
 	return tx.Commit(ctx)
+}
+
+func (r *BannerRepo) AddFiles(ctx context.Context, url string) error {
+	query := `
+	INSERT INTO files (url)
+	VALUES ($1)
+	`
+	_, err := r.pg.Pool.Exec(ctx, query, url)
+	if err != nil {
+		return err
+	}
+	return nil
 }

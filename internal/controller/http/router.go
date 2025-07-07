@@ -17,6 +17,7 @@ import (
 	"github.com/mirjalilova/ccenter_news.git/internal/controller/http/handler"
 	"github.com/mirjalilova/ccenter_news.git/internal/usecase"
 	"github.com/mirjalilova/ccenter_news.git/pkg/logger"
+	"github.com/mirjalilova/ccenter_news.git/pkg/minio"
 )
 
 func TimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
@@ -38,12 +39,12 @@ func TimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-func NewRouter(engine *gin.Engine, l *logger.Logger, config *config.Config, useCase *usecase.UseCase) {
+func NewRouter(engine *gin.Engine, l *logger.Logger, config *config.Config, useCase *usecase.UseCase, minio *minio.MinIO) {
 	// Options
 	engine.Use(gin.Logger())
 	//engine.Use(gin.Recovery())
 
-	handlerV1 := handler.NewHandler(l, config, useCase)
+	handlerV1 := handler.NewHandler(l, config, useCase, *minio)
 
 	// Initialize Casbin enforcer
 
@@ -79,7 +80,7 @@ func NewRouter(engine *gin.Engine, l *logger.Logger, config *config.Config, useC
 		news.POST("/create", handlerV1.CreateBanner)
 		news.PUT("/update", handlerV1.UpdateBanner)
 		news.DELETE("/delete", handlerV1.DeleteBanner)
-		news.DELETE("/image/delete", handlerV1.DeleteImage)
-		news.GET("images/list", handlerV1.ListImages)
+		news.DELETE("/image/delete", handlerV1.DeleteFile)
+		news.GET("images/list", handlerV1.ListFiles)
 	}
 }

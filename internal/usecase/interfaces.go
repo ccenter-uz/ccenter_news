@@ -18,7 +18,8 @@ type (
 		GetAll(ctx context.Context, req *entity.Filter) (*entity.BannerGetAllRes, error)
 		Update(ctx context.Context, req *entity.BannerUpdate) error
 		Delete(ctx context.Context, req *entity.ById) error
-		DeleteImage(ctx context.Context, req *entity.DeleteImage) error
-		GetImages(ctx context.Context) (*entity.ListImages, error)
+		DeleteImage(ctx context.Context, req *entity.DeleteFile) error
+		GetFiles(ctx context.Context) (*[]entity.Url, error)
+		AddFiles(ctx context.Context, url string) error
 	}
 )

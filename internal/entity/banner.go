@@ -44,17 +44,8 @@ type BannerGetAllRes struct {
 	Count   int         `json:"count"`
 }
 
-type DeleteImage struct {
-	ImgUrl string `json:"img_url"`
-}
-
-type Image struct {
-	ImgUrl   string `json:"img_url"`
-	FileLink string `json:"file_link"`
-}
-type ListImages struct {
-	Images []Image `json:"images"`
-	Count  int     `json:"count"`
+type DeleteFile struct {
+	Url string `json:"url"`
 }
 
 type Url struct {

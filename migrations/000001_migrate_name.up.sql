@@ -21,3 +21,10 @@ CREATE TABLE IF NOT EXISTS banner (
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at BIGINT NOT NULL DEFAULT 0
 );
+
+CREATE TABLE IF NOT EXISTS files (
+    url TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    deleted_at BIGINT NOT NULL DEFAULT 0
+);

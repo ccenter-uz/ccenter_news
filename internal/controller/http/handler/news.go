@@ -195,35 +195,35 @@ func (h *Handler) DeleteBanner(c *gin.Context) {
 	c.JSON(200, "New deleted successfully")
 }
 
-// DeleteImage godoc
-// @Summary Delete a Image
-// @Description Delete a Image
+// DeleteFile godoc
+// @Summary Delete a File
+// @Description Delete a File
 // @Tags News
 // @Accept  json
 // @Produce  json
-// @Param url query string true "Image url"
-// @Success 200 {string} string "Image deleted successfully"
+// @Param url query string true "File url"
+// @Success 200 {string} string "File deleted successfully"
 // @Failure 400 {object} string
 // @Failure 500 {object} string
 // @Security BearerAuth
-// @Router /news/image/delete [delete]
-func (h *Handler) DeleteImage(c *gin.Context) {
+// @Router /news/files/delete [delete]
+func (h *Handler) DeleteFile(c *gin.Context) {
 	url := c.Query("url")
 
-	err := h.UseCase.BannerRepo.DeleteImage(context.Background(), &entity.DeleteImage{ImgUrl: url})
+	err := h.UseCase.BannerRepo.DeleteImage(context.Background(), &entity.DeleteFile{Url: url})
 	if err != nil {
-		c.JSON(500, gin.H{"Error deleting Image:": err})
-		slog.Error("Error deleting Image: ", "err", err)
+		c.JSON(500, gin.H{"Error deleting File:": err})
+		slog.Error("Error deleting File: ", "err", err)
 		return
 	}
 
-	slog.Info("Image deleted successfully")
+	slog.Info("File deleted successfully")
 	c.JSON(200, "Image deleted successfully")
 }
 
-// ListImages godoc
-// @Summary Get all Images
-// @Description Get all Images
+// ListFiles godoc
+// @Summary Get all Files
+// @Description Get all Files
 // @Tags News
 // @Accept  json
 // @Produce  json
@@ -231,27 +231,17 @@ func (h *Handler) DeleteImage(c *gin.Context) {
 // @Failure 400 {object} string
 // @Failure 500 {object} string
 // @Security BearerAuth
-// @Router /news/images/list [get]
-func (h *Handler) ListImages(c *gin.Context) {
+// @Router /news/Files/list [get]
+func (h *Handler) ListFiles(c *gin.Context) {
 
-	res, err := h.UseCase.BannerRepo.GetImages(context.Background())
+	urls, err := h.UseCase.BannerRepo.GetFiles(context.Background())
 	if err != nil {
-		c.JSON(500, gin.H{"Error getting images:": err})
-		slog.Error("Error getting images: ", "err", err)
+		c.JSON(500, gin.H{"Error getting Files:": err})
+		slog.Error("Error getting Files: ", "err", err)
 		return
 	}
 
-	urls := []entity.Url{}
-	for _, url := range res.Images {
-		if url.ImgUrl != "" {
-			urls = append(urls, entity.Url{Url: url.ImgUrl})
-		}
-		if url.FileLink != "" {
-			urls = append(urls, entity.Url{Url: url.FileLink})
-		}
-	}
-
-	slog.Info("Images retrieved successfully")
+	slog.Info("Files retrieved successfully")
 	c.JSON(200, urls)
 }
 
