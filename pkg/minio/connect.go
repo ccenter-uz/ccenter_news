@@ -26,10 +26,10 @@ func MinIOConnect(cnf *config.Config) (*MinIO, error) {
 
 	minioClient, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: false,
+		Secure: true,
 	})
 	if err != nil {
-		slog.Error("Failed to connect to MinIO: %v", err)
+		slog.Error("Failed to connect to MinIO", "err", err)
 		return nil, err
 	}
 
@@ -41,7 +41,7 @@ func MinIOConnect(cnf *config.Config) (*MinIO, error) {
 		if errBucketExists == nil && exists {
 			slog.Warn("Bucket already exists: %s\n", bucketName)
 		} else {
-			slog.Error("Error while making bucket %s: %v\n", bucketName, err)
+			slog.Error("Error while making bucket", "bucket", bucketName, "err", err)
 		}
 	} else {
 		slog.Info("Successfully created bucket: %s\n", bucketName)
