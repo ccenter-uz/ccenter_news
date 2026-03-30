@@ -81,6 +81,6 @@ func NewRouter(engine *gin.Engine, l *logger.Logger, config *config.Config, useC
 		news.PUT("/update", handlerV1.UpdateBanner)
 		news.DELETE("/delete", handlerV1.DeleteBanner)
 		news.DELETE("/image/delete", handlerV1.DeleteFile)
-		news.GET("images/list", handlerV1.ListFiles)
+		news.GET("/images/list", handlerV1.ListFiles)
 	}
 }

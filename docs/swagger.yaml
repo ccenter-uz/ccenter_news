@@ -105,33 +105,6 @@ paths:
       summary: File upload
       tags:
       - file-upload
-  /news/Files/list:
-    get:
-      consumes:
-      - application/json
-      description: Get all Files
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/entity.Url'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      security:
-      - BearerAuth: []
-      summary: Get all Files
-      tags:
-      - News
   /news/create:
     post:
       consumes:
@@ -195,7 +168,38 @@ paths:
       summary: Delete an New
       tags:
       - News
-  /news/files/delete:
+  /news/get:
+    get:
+      consumes:
+      - application/json
+      description: Get an News by their ID
+      parameters:
+      - description: News ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.BannerRes'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get News by ID
+      tags:
+      - News
+  /news/image/delete:
     delete:
       consumes:
       - application/json
@@ -226,24 +230,20 @@ paths:
       summary: Delete a File
       tags:
       - News
-  /news/get:
+  /news/images/list:
     get:
       consumes:
       - application/json
-      description: Get an News by their ID
-      parameters:
-      - description: News ID
-        in: query
-        name: id
-        required: true
-        type: string
+      description: Get all Files
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.BannerRes'
+            items:
+              $ref: '#/definitions/entity.Url'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -254,7 +254,7 @@ paths:
             type: string
       security:
       - BearerAuth: []
-      summary: Get News by ID
+      summary: Get all Files
       tags:
       - News
   /news/list:

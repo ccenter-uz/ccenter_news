@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS banner (
     href_name VARCHAR(50),
     type type DEFAULT 'news',
     "order" INT UNIQUE,
+    markdown TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
     deleted_at BIGINT NOT NULL DEFAULT 0

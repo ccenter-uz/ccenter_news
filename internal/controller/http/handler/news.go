@@ -207,7 +207,7 @@ func (h *Handler) DeleteBanner(c *gin.Context) {
 // @Failure 400 {object} string
 // @Failure 500 {object} string
 // @Security BearerAuth
-// @Router /news/files/delete [delete]
+// @Router /news/image/delete [delete]
 func (h *Handler) DeleteFile(c *gin.Context) {
 	url := c.Query("url")
 
@@ -232,7 +232,7 @@ func (h *Handler) DeleteFile(c *gin.Context) {
 // @Failure 400 {object} string
 // @Failure 500 {object} string
 // @Security BearerAuth
-// @Router /news/Files/list [get]
+// @Router /news/images/list [get]
 func (h *Handler) ListFiles(c *gin.Context) {
 
 	urls, err := h.UseCase.BannerRepo.GetFiles(context.Background())

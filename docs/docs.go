@@ -52,49 +52,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/news/Files/list": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get all Files",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "News"
-                ],
-                "summary": "Get all Files",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/entity.Url"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/news/create": {
             "post": {
                 "security": [
@@ -195,7 +152,56 @@ const docTemplate = `{
                 }
             }
         },
-        "/news/files/delete": {
+        "/news/get": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get an News by their ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "News"
+                ],
+                "summary": "Get News by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "News ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.BannerRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/news/image/delete": {
             "delete": {
                 "security": [
                     {
@@ -244,14 +250,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/news/get": {
+        "/news/images/list": {
             "get": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Get an News by their ID",
+                "description": "Get all Files",
                 "consumes": [
                     "application/json"
                 ],
@@ -261,21 +267,15 @@ const docTemplate = `{
                 "tags": [
                     "News"
                 ],
-                "summary": "Get News by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "News ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
+                "summary": "Get all Files",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entity.BannerRes"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Url"
+                            }
                         }
                     },
                     "400": {
