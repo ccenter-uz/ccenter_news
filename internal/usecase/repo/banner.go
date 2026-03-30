@@ -75,8 +75,10 @@ func (r *BannerRepo) Create(ctx context.Context, req *entity.BannerCreate) error
 			href_name,
 			type,
 			"order",
-			markdown
-		) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`
+			markdown_uz,
+			markdown_ru,
+			markdown_en
+		) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`
 
 	_, err = tx.Exec(ctx, query,
 		req.Text.Uz, req.Text.Ru, req.Text.En,
@@ -84,7 +86,8 @@ func (r *BannerRepo) Create(ctx context.Context, req *entity.BannerCreate) error
 		req.Date,
 		req.Label.Uz, req.Label.Ru, req.Label.En,
 		req.ImgUrl, req.FileLink, req.HrefName,
-		req.Type, req.Order, req.Markdown,
+		req.Type, req.Order,
+		req.Markdown.Uz, req.Markdown.Ru, req.Markdown.En,
 	)
 	if err != nil {
 		return err
@@ -116,7 +119,9 @@ func (r *BannerRepo) GetById(ctx context.Context, req *entity.ById) (*entity.Ban
 		href_name,
   		type,
 		"order",
-		markdown,
+		markdown_uz,
+		markdown_ru,
+		markdown_en,
 		created_at
 	FROM 
 		banner
@@ -144,7 +149,9 @@ func (r *BannerRepo) GetById(ctx context.Context, req *entity.ById) (*entity.Ban
 		&res.HrefName,
 		&res.Type,
 		&res.Order,
-		&res.Markdown,
+		&res.Markdown.Uz,
+		&res.Markdown.Ru,
+		&res.Markdown.En,
 		&createdAt,
 	)
 	if err != nil {
@@ -178,7 +185,9 @@ func (r *BannerRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.Ba
 		href_name,
 		type,
 		"order",
-		markdown,
+		markdown_uz,
+		markdown_ru,
+		markdown_en,
 		created_at
 	FROM
 		banner
@@ -228,7 +237,9 @@ func (r *BannerRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.Ba
 			&res.HrefName,
 			&res.Type,
 			&res.Order,
-			&res.Markdown,
+			&res.Markdown.Uz,
+			&res.Markdown.Ru,
+			&res.Markdown.En,
 			&createdAt,
 		)
 		if err != nil {
@@ -314,9 +325,17 @@ func (r *BannerRepo) Update(ctx context.Context, req *entity.BannerUpdate) error
 			return err
 		}
 	}
-	if req.Markdown != "" && req.Markdown != "string" {
-		conditions = append(conditions, " markdown = $"+strconv.Itoa(len(args)+1))
-		args = append(args, req.Markdown)
+	if req.Markdown.Uz != "" && req.Markdown.Uz != "string" {
+		conditions = append(conditions, " markdown_uz = $"+strconv.Itoa(len(args)+1))
+		args = append(args, req.Markdown.Uz)
+	}
+	if req.Markdown.Ru != "" && req.Markdown.Ru != "string" {
+		conditions = append(conditions, " markdown_ru = $"+strconv.Itoa(len(args)+1))
+		args = append(args, req.Markdown.Ru)
+	}
+	if req.Markdown.En != "" && req.Markdown.En != "string" {
+		conditions = append(conditions, " markdown_en = $"+strconv.Itoa(len(args)+1))
+		args = append(args, req.Markdown.En)
 	}
 
 	conditions = append(conditions, " updated_at = now()")

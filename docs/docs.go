@@ -426,7 +426,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/entity.MultilingualField"
                 },
                 "markdown": {
-                    "type": "string"
+                    "$ref": "#/definitions/entity.MultilingualField"
                 },
                 "order": {
                     "type": "integer"
@@ -481,7 +481,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/entity.MultilingualField"
                 },
                 "markdown": {
-                    "type": "string"
+                    "$ref": "#/definitions/entity.MultilingualField"
                 },
                 "order": {
                     "type": "integer"

@@ -13,7 +13,7 @@ definitions:
       label:
         $ref: '#/definitions/entity.MultilingualField'
       markdown:
-        type: string
+        $ref: '#/definitions/entity.MultilingualField'
       order:
         type: integer
       text:
@@ -49,7 +49,7 @@ definitions:
       label:
         $ref: '#/definitions/entity.MultilingualField'
       markdown:
-        type: string
+        $ref: '#/definitions/entity.MultilingualField'
       order:
         type: integer
       text:
