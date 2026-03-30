@@ -74,8 +74,9 @@ func (r *BannerRepo) Create(ctx context.Context, req *entity.BannerCreate) error
 			file_link,
 			href_name,
 			type,
-			"order"
-		) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`
+			"order",
+			markdown
+		) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`
 
 	_, err = tx.Exec(ctx, query,
 		req.Text.Uz, req.Text.Ru, req.Text.En,
@@ -83,7 +84,7 @@ func (r *BannerRepo) Create(ctx context.Context, req *entity.BannerCreate) error
 		req.Date,
 		req.Label.Uz, req.Label.Ru, req.Label.En,
 		req.ImgUrl, req.FileLink, req.HrefName,
-		req.Type, req.Order,
+		req.Type, req.Order, req.Markdown,
 	)
 	if err != nil {
 		return err
@@ -115,6 +116,7 @@ func (r *BannerRepo) GetById(ctx context.Context, req *entity.ById) (*entity.Ban
 		href_name,
   		type,
 		"order",
+		markdown,
 		created_at
 	FROM 
 		banner
@@ -142,6 +144,7 @@ func (r *BannerRepo) GetById(ctx context.Context, req *entity.ById) (*entity.Ban
 		&res.HrefName,
 		&res.Type,
 		&res.Order,
+		&res.Markdown,
 		&createdAt,
 	)
 	if err != nil {
@@ -175,6 +178,7 @@ func (r *BannerRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.Ba
 		href_name,
 		type,
 		"order",
+		markdown,
 		created_at
 	FROM
 		banner
@@ -224,6 +228,7 @@ func (r *BannerRepo) GetAll(ctx context.Context, req *entity.Filter) (*entity.Ba
 			&res.HrefName,
 			&res.Type,
 			&res.Order,
+			&res.Markdown,
 			&createdAt,
 		)
 		if err != nil {
@@ -308,6 +313,10 @@ func (r *BannerRepo) Update(ctx context.Context, req *entity.BannerUpdate) error
 		if err != nil {
 			return err
 		}
+	}
+	if req.Markdown != "" && req.Markdown != "string" {
+		conditions = append(conditions, " markdown = $"+strconv.Itoa(len(args)+1))
+		args = append(args, req.Markdown)
 	}
 
 	conditions = append(conditions, " updated_at = now()")

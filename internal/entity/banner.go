@@ -10,6 +10,7 @@ type BannerCreate struct {
 	HrefName string            `json:"href_name"`
 	Type     string            `json:"type"`
 	Order    int               `json:"order"`
+	Markdown string            `json:"markdown"`
 }
 
 type BannerUpdate struct {
@@ -23,6 +24,7 @@ type BannerUpdate struct {
 	HrefName string            `json:"href_name"`
 	Type     string            `json:"type"`
 	Order    int               `json:"order"`
+	Markdown string            `json:"markdown"`
 }
 
 type BannerRes struct {
@@ -37,6 +39,7 @@ type BannerRes struct {
 	Type      string            `json:"type"`
 	Order     int               `json:"order"`
 	CreatedAt string            `json:"created_at"`
+	Markdown  string            `json:"markdown"`
 }
 
 type BannerGetAllRes struct {

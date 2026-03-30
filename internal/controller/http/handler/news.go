@@ -118,6 +118,7 @@ func (h *Handler) UpdateBanner(c *gin.Context) {
 		HrefName: reqBody.HrefName,
 		Type:     reqBody.Type,
 		Order:    reqBody.Order,
+		Markdown: reqBody.Markdown,
 	})
 	if err != nil {
 		c.JSON(500, gin.H{"Error updating New:": err})

@@ -12,6 +12,8 @@ definitions:
         type: string
       label:
         $ref: '#/definitions/entity.MultilingualField'
+      markdown:
+        type: string
       order:
         type: integer
       text:
@@ -46,6 +48,8 @@ definitions:
         type: string
       label:
         $ref: '#/definitions/entity.MultilingualField'
+      markdown:
+        type: string
       order:
         type: integer
       text:
@@ -101,6 +105,33 @@ paths:
       summary: File upload
       tags:
       - file-upload
+  /news/Files/list:
+    get:
+      consumes:
+      - application/json
+      description: Get all Files
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Url'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all Files
+      tags:
+      - News
   /news/create:
     post:
       consumes:
@@ -164,6 +195,37 @@ paths:
       summary: Delete an New
       tags:
       - News
+  /news/files/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a File
+      parameters:
+      - description: File url
+        in: query
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: File deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a File
+      tags:
+      - News
   /news/get:
     get:
       consumes:
@@ -193,64 +255,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Get News by ID
-      tags:
-      - News
-  /news/image/delete:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a Image
-      parameters:
-      - description: Image url
-        in: query
-        name: url
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Image deleted successfully
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      security:
-      - BearerAuth: []
-      summary: Delete a Image
-      tags:
-      - News
-  /news/images/list:
-    get:
-      consumes:
-      - application/json
-      description: Get all Images
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/entity.Url'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      security:
-      - BearerAuth: []
-      summary: Get all Images
       tags:
       - News
   /news/list:
